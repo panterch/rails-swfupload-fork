@@ -31,20 +31,18 @@ function fileQueueError(fileObj, error_code, message) {
 
 		switch(error_code) {
 			case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
-				image_name = "zerobyte.gif";
+        alert('zero byte file');
 			break;
 			case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
-				image_name = "toobig.gif";
+        alert('image too big');
 			break;
 			case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
 			case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
 			default:
 				alert(message);
-				image_name = "error.gif";
 			break;
 		}
 
-		AddImage("/images/" + image_name);
 
 	} catch (ex) { this.debug(ex); }
 
@@ -66,7 +64,7 @@ function uploadProgress(fileObj, bytesLoaded) {
 		var progress = new FileProgress(fileObj,  this.customSettings.upload_target);
 		progress.SetProgress(percent);
 		if (percent === 100) {
-			progress.SetStatus("Creating thumbnail...");
+			progress.SetStatus("Finishing Upload...");
 			progress.ToggleCancel(false);
 			progress.ToggleCancel(true, this, fileObj.id);
 		} else {
@@ -115,14 +113,13 @@ function uploadError(fileObj, error_code, message) {
 				}
 				catch (ex) { this.debug(ex); }
 			case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
-				image_name = "uploadlimit.gif";
+				alert('Upload limit exceeded, please try again.');
 			break;
 			default:
-				alert(message);
+				alert(error_code+': An error occurred during the upload, please try again.');
 			break;
 		}
 
-		AddImage("/images/" + image_name);
 
 	} catch (ex) { this.debug(ex); }
 
@@ -216,23 +213,11 @@ FileProgress.prototype.ToggleCancel = function(show, upload_obj, file_id) {
 }
 
 function AddImage(src) {
-	var new_img = document.createElement("img");
-	new_img.style.margin = "5px";
+	var new_img = document.createElement("p");
 
 	document.getElementById("thumbnails").appendChild(new_img);
-	if (new_img.filters) {
-		try {
-			new_img.filters.item("DXImageTransform.Microsoft.Alpha").opacity = 0;
-		} catch (e) {
-			// If it is not set initially, the browser will throw an error.  This will set it if it is not set yet.
-			new_img.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + 0 + ')';
-		}
-	} else {
-		new_img.style.opacity = 0;
-	}
-
 	new_img.onload = function () { FadeIn(new_img, 0); };
-	new_img.src = src;
+  new_img.innerHTML = ':-) Uploaded '+src;
 }
 
 function FadeIn(element, opacity) {
